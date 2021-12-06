@@ -1,0 +1,84 @@
+# Default values for service_template.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+service_name: python-hello
+namespace: python-hello
+replicas: 3
+env: qa
+
+deployment: 
+  name: python-hello
+  annotations:
+    sidecar.istio.io/rewriteAppHTTPProbers: "true"
+  image: lxappomsdev004.lowes.com:5001/hello-world
+  image_tag: v1_5
+  pull_policy: IfNotPresent
+  port: 5000
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "250m"
+    limits:
+      memory: "128Mi"
+      cpu: "500m"
+  
+    
+  
+
+probes:
+  livenessProbe:
+    enabled: true
+    path: /simple
+    scheme: HTTP
+    initialDelaySeconds: 30
+    periodSeconds: 15
+    successThreshold: 1
+    timeoutSeconds: 1
+    failureThreshold: 5
+  readinessProbe:
+    enabled: true
+    httpGet:
+    path: /simple
+    scheme: HTTP
+    initialDelaySeconds: 30
+    periodSeconds: 15
+    successThreshold: 1
+    timeoutSeconds: 1
+    failureThreshold: 5   
+
+service:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/python-hello"
+    prometheus.io/port: "5000"
+  port_name: https
+  port: 8080
+
+virtual_service:
+  hosts: "eomsqaservices.lowes.com"
+  gateway: istio-system/https-gateway
+  prefix: /python-hello/
+        
+rolling_update:
+  max_surge: 25%
+  max_unavailable: 25%
+  
+
+hpa:
+  enabled: false
+  min: 3
+  max: 7
+  cpu_threshhold: 60
+  memory_threshhold: 60
+
+configmap:
+  enabled: true
+  data:
+    created_by: "roman"
+
+secret:
+  enabled: true
+  secret_name: secret-basic-auth
+
+
