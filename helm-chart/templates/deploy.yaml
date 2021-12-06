@@ -1,0 +1,87 @@
+{{- $service_name := .Values.service_name -}}
+{{- $namespace := .Values.namespace -}}
+{{- $image_name := .Values.deployment.image -}}
+{{- $tag := .Values.deployment.image_tag -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $service_name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ $service_name}}
+    env: {{ .Values.env }}
+{{- if .Values.deployment.annotations }}
+  annotations:
+  {{- range $key, $value := .Values.deployment.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ $service_name }}
+  strategy:
+    rollingUpdate:
+      maxUnavailable: {{ .Values.rolling_update.max_unavailable | default "1" }}
+      maxSurge: {{ .Values.rolling_update.max_surge | default "1" }}
+  template:
+    metadata:
+      labels:
+        app: {{ $service_name }}
+        env: {{ .Values.env }}
+      {{- if .Values.probes.livenessProbe.enabled }}
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      {{- end }}
+    spec:
+      serviceAccountName: {{ $service_name}}
+      containers:
+      - name: {{ $service_name }}
+        image: {{ $image_name }}:{{ $tag }}
+        imagePullPolicy: {{ .Values.deployment.pull_policy | default "Always" }}
+        {{- if .Values.configmap.enabled }}
+        envFrom:
+          - configMapRef:
+              name: "{{ $service_name }}-configmap"
+          {{- if .Values.secret.enabled }}
+          - secretRef:
+              name: {{ .Values.secret.secret_name }}
+          {{- end }}
+        {{- end }}
+        resources:
+          requests:
+            memory: {{ .Values.deployment.resources.requests.memory }}
+            cpu: {{ .Values.deployment.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.deployment.resources.limits.memory }}
+            cpu: {{ .Values.deployment.resources.limits.cpu }}
+        {{- if .Values.probes.livenessProbe.enabled }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.probes.livenessProbe.path }}
+            port: {{ .Values.deployment.port }}
+            scheme: {{ .Values.probes.livenessProbe.scheme }}
+          initialDelaySeconds: {{ .Values.probes.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.livenessProbe.periodSeconds }}
+          successThreshold: {{ .Values.probes.livenessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.probes.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.probes.livenessProbe.failureThreshold }}
+        {{- end }}
+        {{- if .Values.probes.livenessProbe.enabled }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.probes.readinessProbe.path }}
+            port: {{ .Values.deployment.port }}
+            scheme: {{ .Values.probes.readinessProbe.scheme }}
+          initialDelaySeconds: {{ .Values.probes.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.readinessProbe.periodSeconds }}
+          successThreshold: {{ .Values.probes.readinessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.probes.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.probes.readinessProbe.failureThreshold }}
+        {{- end }}
+        {{- if .port }}
+        ports:
+        - containerPort: {{ .Values.deployment.port }}
+          protocol: TCP
+{{- end }}
