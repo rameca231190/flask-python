@@ -1,5 +1,22 @@
-# flask-python
+Current example of building and deploying application on top of k8s using Docker, helm, Jenkinsfile. 
 
+Tree of the repo:
+
+## app/app.py
+
+Application was build using flask-python so all application related code resides on above location, it is having simple return code of "Hello World"
+
+helm-chart/
+
+Having
+
+
+
+
+
+
+
+Bellow is some major commands was used on this project.
 # Command to build docker image:
 docker build -t hello-world:v1 .
 
