@@ -6,7 +6,7 @@ Tree of the repo:
 
 Application was build using flask-python so all application related code resides on above location, it is having simple return code of "Hello World"
 
-helm-chart/
+# helm-chart/
 
 Having
 
