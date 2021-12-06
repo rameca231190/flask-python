@@ -1,27 +1,33 @@
-from flask import Flask
-from flask import render_template
-#from app import app
-
+from flask import Flask, request
+from prometheus_flask_exporter import PrometheusMetrics
 app = Flask(__name__)
+metrics = PrometheusMetrics(app)
 
-#def home():
-#  return "Welcome to my app!"
 
-@app.route("/")
-@app.route('/index')
-def index():
-    user = {'username': 'Roman'}
-    posts = [
-        {
-            'author': {'username': 'Nastia'},
-            'body': 'Beautiful day in Portland!'
-        },
-        {
-            'author': {'username': 'Susan'},
-            'body': 'The Avengers movie was so cool!'
-        }
-    ]
-    return render_template('index.html', title='Home', user=user, posts=posts)
+# static information as metric
+metrics.info('app_info', 'Application info', version='1.0.3')
+
+by_path_counter = metrics.counter(
+    'by_path_counter', 'Request count by request paths',
+    labels={'path': lambda: request.path}
+)
+
+
+@app.route('/')
+@by_path_counter
+def hello_world():
+    return 'Hello World!'
+
+
+@app.route('/simple')
+@by_path_counter
+def simple_get():
+    return 'called /simple'
+
+
+@app.route('/skip')
+def skip():
+    return 'called /skip : no metrics stored'
 
 
 if __name__ == '__main__':
