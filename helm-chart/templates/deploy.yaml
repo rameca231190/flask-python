@@ -44,10 +44,6 @@ spec:
         envFrom:
           - configMapRef:
               name: "{{ $service_name }}-configmap"
-          {{- if .Values.secret.enabled }}
-          - secretRef:
-              name: {{ .Values.secret.secret_name }}
-          {{- end }}
         {{- end }}
         resources:
           requests:

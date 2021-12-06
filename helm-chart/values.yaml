@@ -11,8 +11,8 @@ deployment:
   name: python-hello
   annotations:
     sidecar.istio.io/rewriteAppHTTPProbers: "true"
-  image: <SPECIFY_IMAGE_HERE>
-  image_tag: v1_5
+  image: rameca231190/hello-world #<SPECIFY_IMAGE_HERE>
+  image_tag: v1 
   pull_policy: IfNotPresent
   port: 5000
   resources:
@@ -55,10 +55,10 @@ service:
   port_name: https
   port: 8080
 
-virtual_service:
-  hosts: "SPECIFY_HOST_HERE_DNS_ENTRY"
-  gateway: <SPECIFY_INGRESS_GATEWAY_NAME_HERE>
-  prefix: /python-hello/
+#virtual_service:
+#  hosts: "SPECIFY_HOST_HERE_DNS_ENTRY"
+#  gateway: <SPECIFY_INGRESS_GATEWAY_NAME_HERE>
+#  prefix: /python-hello/
         
 rolling_update:
   max_surge: 25%
@@ -77,8 +77,5 @@ configmap:
   data:
     created_by: "roman"
 
-secret:
-  enabled: true
-  secret_name: secret-basic-auth
 
 
