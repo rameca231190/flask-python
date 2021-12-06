@@ -1,3 +1,7 @@
+# Not sure a multistage pipeline makes sense for python
+# using ubutnu https://pythonspeed.com/articles/alpine-docker-python/
+# Python 3.8 isn't native on Ubuntu:18.04 so add Ubuntu's repo deadsnakes
+#    to gain access to newer applications
 FROM ubuntu:18.04
 RUN apt-get update -y && \
     apt-get install -y software-properties-common && \
