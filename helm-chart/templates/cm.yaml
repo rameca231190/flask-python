@@ -1,0 +1,15 @@
+{{- $service_name := .Values.service_name -}}
+{{- $namespace := .Values.namespace -}}
+{{- if .Values.configmap.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $service_name }}-configmap
+  # property-like keys; each key maps to a simple value
+{{- if .Values.configmap.data }}
+data:
+  {{- range $key, $value := .Values.configmap.data }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
+{{- end }}
