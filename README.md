@@ -6,10 +6,17 @@ Tree of the repo:
 
 Application was build using flask-python so all application related code resides on above location, it is having simple return code of "Hello World"
 
-# helm-chart/
+## helm-chart/
 
-Having
+Having files related to generate manifests and deploy the chart, template/ has all related templates to manifests, values.yaml has values mapped as a single variable list for those templates.
 
+## Dockerfile 
+
+Has all related layers and packages to this app.
+
+## Jenkinsfile
+
+Has all nececary steps to configure CI/CD for current application.
 
 
 
@@ -17,15 +24,15 @@ Having
 
 
 Bellow is some major commands was used on this project.
-# Command to build docker image:
+## Command to build docker image:
 docker build -t hello-world:v1 .
 
-# Command to run docker image:
+## Command to run docker image:
 docker run -dti --name hello-world -p 5000:5000 <image_id >
 
-# Helm command to see the output as yaml file of manifests to be installed.
+## Helm command to see the output as yaml file of manifests to be installed.
 helm upgrade --install hello-world helm-chart -f helm-chart/vales.yaml -n python-hello --dry-run
 
-# Tag docker image and push it to Dockerhub
+## Tag docker image and push it to Dockerhub
 docker image tag 0a958dec7556 rameca231190/hello-world:v1
 docker push rameca231190/hello-world:v1
