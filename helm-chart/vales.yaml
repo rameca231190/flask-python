@@ -11,7 +11,7 @@ deployment:
   name: python-hello
   annotations:
     sidecar.istio.io/rewriteAppHTTPProbers: "true"
-  image: lxappomsdev004.lowes.com:5001/hello-world
+  image: <SPECIFY_IMAGE_HERE>
   image_tag: v1_5
   pull_policy: IfNotPresent
   port: 5000
@@ -56,8 +56,8 @@ service:
   port: 8080
 
 virtual_service:
-  hosts: "eomsqaservices.lowes.com"
-  gateway: istio-system/https-gateway
+  hosts: "SPECIFY_HOST_HERE_DNS_ENTRY"
+  gateway: <SPECIFY_INGRESS_GATEWAY_NAME_HERE>
   prefix: /python-hello/
         
 rolling_update:
